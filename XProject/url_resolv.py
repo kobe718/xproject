@@ -20,7 +20,7 @@ if __name__ == '__main__':
                            charset='utf8')
 try:
     with conn.cursor() as cursor:
-        sql = "select `id`,`url` from `targets`"
+        sql = "select `id`,`url` from `targets` where id > 121036"
         cursor.execute(sql) 
         output = []
         while 1:

@@ -1,3 +1,6 @@
 eclipse.preferences.version=1
+encoding/ip-geo.py=utf-8
+encoding/ip.py=utf-8
+encoding/ip_city.py=utf-8
 encoding/url_head.py=utf-8
 encoding/url_resolv.py=utf-8
