@@ -24,7 +24,7 @@ if __name__ == '__main__':
     gi = pygeoip.GeoIP('GeoIPCity.dat')
 try:
     with conn.cursor() as cursor:
-        sql = "select `ip`,`urlid` from `target_ip` where urlid > 84311"
+        sql = "select `ip`,`urlid` from `target_ip`"
         cursor.execute(sql) 
         output = []
         while 1:

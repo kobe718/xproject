@@ -29,13 +29,13 @@ if __name__ == '__main__':
              }
 try:
     with conn.cursor() as cursor:
-        sql = "select `id`,`url` from `targets`"
+        sql = "select `id`,`url` from `targets` where id > 1430"
         cursor.execute(sql)
         output=[]
         i = 0
-        while i<100:
+        while 1:
             res = cursor.fetchmany(5)
-            i+=5
+            #i+=5
             if len(res) == 0:
                 break;
             for line in res:
@@ -44,26 +44,30 @@ try:
                 try:
                     #print line[1]
                     ts = time.time()
-                    response = urllib2.urlopen(request)
+                    response = urllib2.urlopen(request,None,timeout=5)
                     ts = (time.time() - ts)*1000 #ms
                     size = len(response.read())
                     speed = size/ts #kb/s
-                    print line[1],ts,size,speed
+                    print line[0],line[1],ts,size,speed
                     output.append((line[0],ts,size,speed,'200'))
                     #print response.info()
                 except urllib2.HTTPError as e:
                     print time.strftime('%H-%M-%S'),line[1],e.code
-                    output.append((line[0],0,0,0,e.code))
+                    output.append((line[0],0,0,0,str(e.code)))
                     pass
                 except urllib2.URLError as e:
                     print time.strftime('%H-%M-%S'),line[1],e.reason
-                    output.append((line[0], 0, 0,0,e.reason))
+                    output.append((line[0], 0, 0,0,str(e.reason)))
                     pass
-                continue
+                except KeyboardInterrupt:
+                    #print str(e)
+                    break
+                except :
+                    pass
             try:
                 with conn.cursor() as cursor2:
                     insert = r"insert into target_available (id,`time`,`size`,`speed`,`status`) values (%s,%s,%s,%s,%s) "
-                    print output
+                    #print output
                     cursor2.executemany(insert,output)
                     conn.commit()
                     output = []
