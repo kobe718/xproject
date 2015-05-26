@@ -44,7 +44,7 @@ try:
             if len(res) == 0:
                 break
             for line in res:
-                targets.append(line[0].replace("http://","").replace("\",""))
+                targets.append(line[0].replace("http://","").replace("\\",""))
 
             with gevent.Timeout(2,False):
                 jobs = [pool.spawn(resolv, target) for target in targets]
