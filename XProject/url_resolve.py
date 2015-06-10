@@ -8,10 +8,10 @@ import pymysql
 from gevent.pool import Pool
 from scapy.all import *
 
-conn = pymysql.connect(host='10.102.1.8',
+conn = pymysql.connect(host='10.102.1.212',
                            user='root',
-                           passwd='123456',
-                           db='xproject',
+                           passwd='root',
+                           db='ttscan-biz-sh-v1.0.2',
                            charset='utf8')
 
 targets = []
@@ -37,7 +37,7 @@ def resolv(target):
 try:
     output = []
     with conn.cursor() as cursor:
-        sql = "select `url` from `temptarget`"
+        sql = "select `url` from `t_site`"
         cursor.execute(sql) 
         while 1:
             res = cursor.fetchmany(100)
@@ -52,7 +52,7 @@ try:
             try:
                 with conn.cursor() as cursor2:
                     #print output
-                    insert = r"insert into target_dns (`url`, `rname`, `type`, `rdata`) values (%s, %s, %s, %s)"
+                    insert = r"insert into t_targetdns (`url`, `rname`, `type`, `rdata`) values (%s, %s, %s, %s)"
                     cursor2.executemany( insert, output)
                     conn.commit()
                     output = []
