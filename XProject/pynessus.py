@@ -19,7 +19,6 @@ class pynessus(object):
         self._username = username
         self._password = password
         self._url = url
-        self._auth = False
         self._token = None
         
    
@@ -28,27 +27,38 @@ class pynessus(object):
         opener = build_opener(HTTPSHandler(context=context))
         #f=urlopen(url,data=urlencode(params),context=context)
         request = Request(url,data=urlencode(params))
-        if self._auth :
+        if self._token is not None :
             request.add_header('X-Cookie','token='+self._token)
         if methods != 'GET':
             request.get_method = lambda: methods
-        f = opener.open(request)       
+        try:
+            f = opener.open(request)
+        except urllib2.HTTPError as e:
+            print str(e.code)
+        except urllib2.URLError as e:
+            print str(e.reason)
+            
         _msg=f.read(8192)
-        msg=json.loads(_msg)
-        return msg
+        if len(_msg) > 0:
+            msg=json.loads(_msg)
+            return msg
+        else:
+            return None
     
     def _authenticate(self):
-        url = self._url + "/session"
-        params = dict(username=self._username, password=self._password)
-        reply = self._get_reply(url, params)
-        self._token = reply["token"]
-        self._auth = True
+        if self._token is None :
+            url = self._url + "/session"
+            params = dict(username=self._username, password=self._password)
+            reply = self._get_reply(url, params)
+            self._token = reply["token"]
+
     
     def _logout(self):
-        url = self._url + "/session"
-        reply = self._get_reply(url,methods='DELETE')
-        self._token = None
-        self._auth = False
+        if self._token is not None :
+            url = self._url + "/session"
+            reply = self._get_reply(url,methods='DELETE')
+            self._token = None
+
 
         
     
