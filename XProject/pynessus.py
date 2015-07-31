@@ -53,12 +53,26 @@ class pynessus(object):
             self._token = reply["token"]
 
     
-    def _logout(self):
+    def close(self):
         if self._token is not None :
             url = self._url + "/session"
             reply = self._get_reply(url,methods='DELETE')
             self._token = None
 
+    def addscan(self):
+        if self._token is None:
+            self._authenticate()
+        if self._token is None:
+            return -1
+        
+        
+        pass
+    
+    def getstatus(self,scanid):
+        pass
+    
+    def getresult(self,scanid):
+        pass
 
         
     
@@ -67,11 +81,11 @@ if __name__ == '__main__':
     
     nessus = pynessus(url='https://10.101.1.53:8834',username='api',password='api@123')
     
-    nessus._authenticate()
     
-    print nessus._token
     
-    nessus._logout()
+
+    
+    
     
 
     
