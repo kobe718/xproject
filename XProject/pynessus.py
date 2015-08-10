@@ -13,6 +13,8 @@ import json
 #from xml.dom.minidom import parse as parse_xml
 import ssl
 import urllib2
+from time import sleep
+import control
 
 class pynessus(object):
     def __init__(self, url, username, password):
@@ -59,7 +61,7 @@ class pynessus(object):
             reply = self._get_reply(url,methods='DELETE')
             self._token = None
 
-    def addscan(self):
+    def addscan(self, target, template):
         if self._token is None:
             self._authenticate()
         if self._token is None:
@@ -71,15 +73,45 @@ class pynessus(object):
     def getstatus(self,scanid):
         pass
     
+    def getprogress(self,scanid):
+        pass
+    
     def getresult(self,scanid):
         pass
 
+    def geterrmsg(self,scanid):
+        pass
+    
+    def deletescan(self,scanid):
+        pass
+    
+    def parseresult(self, result):
+        pass
         
     
 
 if __name__ == '__main__':
     
-    nessus = pynessus(url='https://10.101.1.53:8834',username='api',password='api@123')
+    nessus = pynessus(url='https://127.0.0.1:8834',username='api',password='api@123')
+    
+    sc = control.SectotalControl(server='1.1.1.1',apikey='1q2w3e4r5t6y',scanner='nessus001')
+    
+    ntarget = sc.gettarget(1)
+    
+    scanid = nessus.addscan(target=ntarget,template='basic')
+    
+    while nessus.getstatus(scanid) == 'running':
+        sc.statusreport(ntarget, nessus.getprogress(scanid))
+        sleep(100)
+    
+    if nessus.getstatus(scanid) == 'finished':
+        result = nessus.getresult(scanid)
+        sc.putresult(ntarget, nessus.parseresult(result))
+    else:
+        sc.errorreport(ntarget, nessus.geterrmsg())
+ 
+    
+    nessus.deletescan(scanid)
     
     
     
